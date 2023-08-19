@@ -10,11 +10,50 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Cities {
-  id           String @id @default(uuid())
-  country      String
-  city         String
-  neighborhood String
+model User {
+  id       String   @id @default(uuid())
+  username String   @unique
+  password String
+  creat_at DateTime @default(now())
 
-  @@map("local")
+  User_permission User_permission[]
+  User_role       User_role[]
+
+  @@map("users")
+  }
+
+model Permission {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  creat_at    DateTime @default(now())
+
+  User_permission User_permission[]
+
+  @@map("permissions")
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  creat_at    DateTime @default(now())
+
+  user_role User_role[]
+}
+
+model User_permission {
+  id            String     @id @default(uuid())
+  user_id       String
+  user          User       @relation(fields: [user_id], references: [id])
+  permission_id String
+  permission    Permission @relation(fields: [permission_id], references: [id])
+}
+
+model User_role {
+  id      String @id @default(uuid())
+  user_id String
+  user    User   @relation(fields: [user_id], references: [id])
+  role_id String
+  role    Role   @relation(fields: [role_id], references: [id])
 }
